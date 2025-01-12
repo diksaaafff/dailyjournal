@@ -1,3 +1,6 @@
+<?php
+include "koneksi.php"; 
+?>
 <!DOCTYPE html>
 <html lang="id">
   <head>
@@ -11,7 +14,7 @@
 
     <style>
       #home {
-        background-image: url(image/naruto-kreak.jpg);
+        background-image: url(img/naruto-kreak.jpg);
         background-size: cover;
         background-position: center;
         color: white;
@@ -63,6 +66,9 @@
             <li class="nav-item">
               <a class="nav-link" href="#About Me">About Me</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login.php">login</a>
+            </li>
           </ul>
           <button id="dark-mode" class="btn btn-outline ms-2" style="background-color: var(--bs-body-bg);">
             <i class="fas fa-moon"></i> Dark
@@ -85,130 +91,88 @@
       </div>
     </section>
 
-    <section id="artikel" class="container my-5">
-      <h2 class="text-center mb-4"><b>Artikel</b></h2>
-      <div class="row justify-content-center">
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <img
-              src="image/naruto-uzumaki.webp"
-              class="card-img-top"
-              alt="Uzumaki Naruto"
-            />
-            <div class="card-body">
-              <h5 class="card-title"><b>Naruto Uzumaki</b></h5>
-              <p class="card-text">
-                adalah shinobi dari Konohagakure. Dia menjadi jinchūriki dari Ekor Sembilan pada hari kelahirannya — sebuah nasib yang
-                 menyebabkan dia dijauhi oleh sebagian besar penduduk Konoha sepanjang masa kecilnya. Setelah bergabung dengan Tim Kakashi,
-                  Naruto bekerja keras untuk mendapatkan pengakuan desa sambil mengejar mimpinya untuk menjadi Hokage. Pada tahun-tahun berikutnya, 
-                  melalui banyak kesulitan dan cobaan berat, ia menjadi ninja yang cakap yang dianggap sebagai pahlawan baik oleh penduduk desa,
-                   dan segera setelah itu, seluruh dunia, sehingga dikenal sebagai Pahlawan dari Konoha
-              </p>
-              <a href="#" class="btn btn-outline-secondary"style="background-color: var(--bs-body-bg);">Baca lebih lanjut...</a>
-            </div>
-          </div>
-        </div>
+   <!-- article begin -->
+    <section id="article" class="text-center p-5">
+        <div class="container">
+            <h1 class="fw-bold display-4 pb-3">article</h1>
+            <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            <?php
+            $sql = "SELECT * FROM article ORDER BY tanggal DESC";
+            $hasil = $conn->query($sql); 
 
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <img
-              src="image/sakura-cantik.webp"
-              class="card-img-top"
-              alt="Sakura Haruno"
-            />
-            <div class="card-body">
-              <h5 class="card-title"><b>Sakura Haruno</b></h5>
-              <p class="card-text">
-                Sakura Uchiha (内波 桜, Uchiha Sakura; née Haruno (春野)) adalah kunoichi dari Konohagakure. Ketika dia ditugaskan ke Tim 7, Sakura dengan cepat merasa dirinya tidak siap menghadapi tugas seorang ninja dan serta seluk-beluk kehidupan rekan setimnya. Dengan berlatih di bawah gurunya, Tsunade, dia menjadi mampu menghadapi tantangan menjadi seorang ninja dan diakui sebagai salah satu ninja medis terbesar di dunia.
-                Sakura adalah anak tunggal Mebuki dan Kizashi Haruno. Dia memiliki masa kecil biasa, dibesarkan oleh orang tuanya tanpa tragedi atau desas-desus serius. Saat memasuki Akademi Ninja Konoha.
-              </p>
-              <a href="#" class="btn btn-outline-secondary"style="background-color: var(--bs-body-bg);">Baca lebih lanjut...</a>
+            while($row = $hasil->fetch_assoc()){
+            ?>
+                <div class="col">
+                <div class="card h-100">
+                    <div class="ratio ratio-4x3"> <!-- Tambahkan rasio -->
+                    <img src="img/<?= $row["gambar"]?>" class="card-img-top img-fluid" alt="..." />
+                    </div>
+                    <div class="card-body">
+                    <h5 class="card-title"><?= $row["judul"]?></h5>
+                    <p class="card-text">
+                        <?= $row["isi"]?>
+                    </p>
+                    </div>
+                    <div class="card-footer">
+                    <small class="text-body-secondary">
+                        <?= $row["tanggal"]?>
+                    </small>
+                    </div>
+                </div>
+                </div>
+                <?php
+            }
+            ?> 
             </div>
-          </div>
         </div>
+    </section>
+    <!-- article end -->
+      
+    <section id="gallery" class="container my-5">
+        <h2 class="text-center mb-4"><b>Gallery</b></h2>
+            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <?php
+                    $sql = "SELECT * FROM gallery ORDER BY tanggal DESC";
+                    $hasil = $conn->query($sql); 
+                    $total_images = $hasil->num_rows;
+                    $counter = 0;
+                    while($row = $hasil->fetch_assoc()){
+                        $active_class = ($counter == 0) ? 'active' : '';
+                        echo '<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="' . $counter . '" class="' . $active_class . '" aria-current="true" aria-label="Slide ' . ($counter + 1) . '"></button>';
+                        $counter++;
+                    }
+                    ?>
+                </div>
+                
+                <div class="carousel-inner">
+                    <?php
+                    $hasil->data_seek(0); // Reset pointer
+                    $counter = 0;
+                    while($row = $hasil->fetch_assoc()){
+                        $active_class = ($counter == 0) ? 'active' : '';
+                        echo '<div class="carousel-item ' . $active_class . '">';
+                        echo '<div class="ratio ratio-16x9">'; // Rasio aspek tetap untuk gambar
+                        echo '<img src="img/' . $row["gambar"] . '" class="d-block w-100 img-fluid" alt="' . $row["judul"] . '">';
+                        echo '</div>';
+                        echo '<div class="carousel-caption d-none d-md-block">';
+                        echo '<h5>' . $row["judul"] . '</h5>';
+                        echo '</div>';
+                        echo '</div>';
+                        $counter++;
+                    }
+                    ?>
+                </div>
 
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <img
-              src="image/sasuke-ganteng.webp"
-              class="card-img-top"
-              alt="Sasuke Uchiha"
-            />
-            <div class="card-body">
-              <h5 class="card-title"><b>Sasuke Uchiha</b></h5>
-              <p class="card-text">
-                Sasuke Uchiha (団扇 佐助, Uchiha Sasuke) adalah salah satu anggota terakhir klan Uchiha yang masih bertahan dari Konohagakure. 
-                Setelah kakaknya, Itachi, membantai klan mereka, Sasuke berusaha mewujudkan misinya dalam rangka untuk membalas dendam dengan membunuh Itachi. 
-                Dia dimasukkan ke Tim 7 saat menjadi seorang ninja dan, melalui persaingan dengan rival dan sahabatnya, Naruto Uzumaki, Sasuke mulai mengembangkan keahliannya. 
-                Tidak puas dengan kemajuannya, ia pergi dari Konoha sehingga ia bisa memperoleh kekuatan yang dibutuhkan untuk membalas dendam. 
-              </p>
-              <a href="#" class="btn btn-outline-secondary"style="background-color: var(--bs-body-bg);">Baca lebih lanjut...</a>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <img
-              src="image/itachi-ganteng.webp"
-              class="card-img-top"
-              alt="Itachi Uchiha"
-            />
-            <div class="card-body">
-              <h5 class="card-title"><b>Itachi Uchiha</b></h5>
-              <p class="card-text">
-                Itachi Uchiha (団扇 鼬, Uchiha Itachi) adalah seorang anak ajaib klan Uchiha dari Konohagakure. 
-                Ia menjadi seorang penjahat internasional setelah membunuh seluruh klan, dan hanya menyelamatkan adiknya, Sasuke.
-                 Dia kemudian bergabung dengan organisasi kriminal internasional yang dikenal sebagai Akatsuki,
-                 dengan aktivitas yang juga membawa dia pada konflik dengan Ninja Konoha — termasuk Sasuke — yang berusaha untuk membalas dendam klan mereka. 
-              </p>
-              <a href="#" class="btn btn-outline-secondary"style="background-color: var(--bs-body-bg);">Baca lebih lanjut...</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <img
-              src="image/kakashi-ganteng.webp"
-              class="card-img-top"
-              alt="Kakashi Hatake"
-            />
-            <div class="card-body">
-              <h5 class="card-title"><b>Kakashi Hatake </b></h5>
-              <p class="card-text">
-                Kakashi Hatake (派竹 歌々子, Hatake Kakashi) adalah shinobi Konohagakure dari klan Hatake. 
-                Terkenal sebagai Kakashi si Sharingan (写輪眼のカカシ, Sharingan no Kakashi), dia adalah salah satu ninja Konoha yang paling berbakat; 
-                secara teratur tampak suka memberi nasihat dan berkepemimpinan meskipun dia tidak menyukai tanggung jawab pribadi. Untuk murid-muridnya di Tim 7,
-                 Kakashi mengajarkan pentingnya kerja sama tim, sebuah pelajaran yang dia terima, bersama dengan Sharingan, dari teman masa kecilnya, Obito Uchiha.
-              </p>
-              <a href="#" class="btn btn-outline-secondary"style="background-color: var(--bs-body-bg);">Baca lebih lanjut...</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <img
-              src="image/obito-ganteng.webp"
-              class="card-img-top"
-              alt="Obito Uchiha"
-            />
-            <div class="card-body">
-              <h5 class="card-title"><b>Obito Uchiha </b></h5>
-              <p class="card-text">
-                Obito Uchiha (うちはオビト, Uchiha Obito) adalah anggota klan Uchiha dari Konohagakure.
-                 Dia diyakini telah meninggal selama Perang Dunia Shinobi Ketiga,
-                  satu-satunya warisan yang masih ada adalah Sharingan yang dia berikan kepada rekan setimnya, 
-                  Kakashi Hatake. Sebenarnya, Obito diselamatkan dari kematian dan dilatih oleh Madara Uchiha,
-                   namun kejadian perang tersebut membuat Obito kecewa dengan kenyataan,
-                   dan dia mewarisi rencana Madara untuk menciptakan dunia yang ideal.
-              </p>
-              <a href="#" class="btn btn-outline-secondary"style="background-color: var(--bs-body-bg);">Baca lebih lanjut...</a>
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
 
     <hr style="border: 3px bg-secondary margin: 0;">
@@ -244,13 +208,13 @@
         </div>
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="image/konoha.jpg" class="d-block w-100" alt="Gambar 1" />
+            <img src="img/konoha.jpg" class="d-block w-100" alt="Gambar 1" />
           </div>
           <div class="carousel-item">
-            <img src="image/kota-prindavan.jpg" class="d-block w-100" alt="Gambar 2" />
+            <img src="img/kota-prindavan.jpg" class="d-block w-100" alt="Gambar 2" />
           </div>
           <div class="carousel-item">
-            <img src="image/keluarga-naruto.jpg" class="d-block w-100" alt="Gambar 3" />
+            <img src="img/keluarga-naruto.jpg" class="d-block w-100" alt="Gambar 3" />
           </div>
         </div>
         <button
